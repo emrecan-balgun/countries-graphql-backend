@@ -4,14 +4,6 @@ const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-serve
 const { languages, continents, countries } = require('./data');
 
 const typeDefs = gql`
-    # type Author {
-    #     id: ID!
-    #     name: String!
-    #     surname: String
-    #     age: Int
-    #     books(filter: String): [Book!] # if the book exists it cannot be null
-    # }
-
     type Country {
         id: ID!
         name: String!
@@ -21,6 +13,7 @@ const typeDefs = gql`
     type Language {
         id: ID!
         name: String!
+        code: String!
     }
 
     type Continent {
@@ -29,65 +22,29 @@ const typeDefs = gql`
         code: String!
     }
 
-    # type Book {
-    #     id: ID!
-    #     title: String!
-    #     author: Author
-    #     author_id: ID!
-    #     score: Float
-    #     isPublished: Boolean
-    # }
-
     type Query {
-        # books: [Book!] # an array can be empty, but the object inside cannot be null
-        # book(id: ID!): Book!
-
         countries: [Country!]
-        
+        country(code: String!): Country!
 
         languages: [Language!]
-
+        language(code: String!): Language!
 
         continents: [Continent!]
-
-        # authors: [Author!]
-        # author(id: ID!): Author!
+        continent(code: String!): Continent!
     }
 `;
 
 const resolvers = {
     Query: {
-        // books: () => books,
-
-        // book: (parent, args) => books.find(book => book.id === args.id),
-
         countries: () => countries,
-        // country: (parent, args) => countries.find(country => country.code === args.code),
+        country: (parent, args) => countries.find(country => country.code === args.code),
 
         languages: () => languages,
+        language: (parent, args) => languages.find(language => language.code === args.code),
 
         continents: () => continents,
-
-        // authors: () => authors,
-
-        // author: (parent, args) => authors.find(author => author.id === args.id),  
+        continent: (parent, args) => continents.find(continent => continent.code === args.code),
     },
-
-    // Book: {
-    //     author: (parent) => authors.find((author) => author.id ===  parent.author_id),
-    // },
-
-    // Author: {
-    //     books: (parent, args) => {
-    //     let filtered = books.filter((book) => book.author_id === parent.id)
-
-    //     if(args.filter) {
-    //         filtered = filtered.filter((book) => book.title.toLowerCase().startsWith(args.filter))
-    //     }
-        
-    //     return filtered
-    // }
-    // }
 };
 
 const server = new ApolloServer({ 
