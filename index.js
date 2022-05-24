@@ -8,18 +8,25 @@ const typeDefs = gql`
         id: ID!
         name: String!
         code: String!
+        language: Language
+        continent: Continent
+        continent_code: String
     }
 
     type Language {
         id: ID!
         name: String!
         code: String!
+        country: Country
+        continent: Continent
+        continent_code: String
     }
 
     type Continent {
         id: ID!
         name: String!
         code: String!
+        countries: [Country]
     }
 
     type Query {
@@ -44,6 +51,20 @@ const resolvers = {
 
         continents: () => continents,
         continent: (parent, args) => continents.find(continent => continent.code === args.code),
+    },
+
+    Country: {
+        language: (parent) => languages.find((language) => language.code === parent.code),
+        continent: (parent) => continents.find((continent) => continent.code === parent.continent_code),
+    },
+
+    Language: {
+        country: (parent) => countries.find((country) => country.code === parent.code),
+        continent: (parent) => continents.find((continent) => continent.code === parent.continent_code),
+    },
+
+    Continent: {
+        countries: (parent) => countries.filter((country) => country.continent_code === parent.code),
     },
 };
 
